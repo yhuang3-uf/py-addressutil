@@ -338,7 +338,7 @@ class Address:
                 re.sub(r"[^A-Za-z0-9]", "", unparsed_tokens[1].literal) == "O" and unparsed_tokens[2].literal == "BOX":
             if len(unparsed_tokens) < 4:
                 raise AddressParseError("missing box number in post office box address", delivery_address, unparsed_tokens[-1].index + len(unparsed_tokens[-1].literal))
-            po_box_number: str = unparsed_tokens[3].literal
+            po_box_number = unparsed_tokens[3].literal
             if po_box_number[0] == '-':
                 po_box_number = "0" + po_box_number[1:]
             return PostOfficeBoxAddress(po_box_number, city, state, zipcode, zipcode_ext)
