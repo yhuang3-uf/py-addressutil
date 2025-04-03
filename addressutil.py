@@ -334,6 +334,14 @@ class Address:
             if po_box_number[0] == '-':
                 po_box_number = "0" + po_box_number[1:]
             return PostOfficeBoxAddress(po_box_number, city, state, zipcode, zipcode_ext)
+        elif len(unparsed_tokens) >= 2 and re.sub(r"[^A-Za-z0-9]", "", unparsed_tokens[0].literal) == "P" and \
+                re.sub(r"[^A-Za-z0-9]", "", unparsed_tokens[1].literal) == "O" and unparsed_tokens[2].literal == "BOX":
+            if len(unparsed_tokens) < 4:
+                raise AddressParseError("missing box number in post office box address", delivery_address, unparsed_tokens[-1].index + len(unparsed_tokens[-1].literal))
+            po_box_number: str = unparsed_tokens[3].literal
+            if po_box_number[0] == '-':
+                po_box_number = "0" + po_box_number[1:]
+            return PostOfficeBoxAddress(po_box_number, city, state, zipcode, zipcode_ext)
         
         # Assuming standard address
         
@@ -788,7 +796,7 @@ if __name__ == "__main__":
     "1552 COUNTY ROAD 252\nCHICAGO IL 12345-6789", "1480 Inner Road\nGainesville, FL 32611", "General Delivery\nGainesville, FL, 32601", 
     "1234 S.E. BROADWAY AVE UNIT 5\nNEW YORK, NY, 10002", "PO BOX 15\nSPRINGFIELD IL 12345", "P.O. BOX C\nSPRINGFIELD IL 12345",
     "123 MAIN ST # 45\nSPRINGFIELD IL 12345", "123 MAIN ST #45\nSPRINGFIELD IL 12345", "51 1/2 362ND COURT SE\nCHICAGO, IL, 56124-7162",
-    "201 FILBERT ST,STE 700\nSAN FRANCISCO CA 94133-3242")
+    "201 FILBERT ST,STE 700\nSAN FRANCISCO CA 94133-3242", "P. O. BOX 123\nSPRINGFIELD IL 12345", "P. O. BOX 123B\nSPRINGFIELD IL 12345",)
     for address in test_addresses:
         print(address)
         address_object: Address = Address.parse(*address.split('\n'))
